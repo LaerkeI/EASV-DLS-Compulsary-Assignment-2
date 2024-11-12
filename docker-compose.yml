@@ -1,7 +1,29 @@
 services:
   structurizr:
+    container_name: "structurizr"
     image: structurizr/lite
     ports:
       - "8080:8080"
     volumes:
       - ./docs:/usr/local/structurizr
+
+  mssql-server:
+    #The name of the db is "BloodPressureTrackerDB"
+    container_name: "mssql-server"
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssqlserver-data:/var/opt/mssql
+    networks:
+      - blood-pressure-tracker-network
+
+volumes:
+  mssqlserver-data:
+
+networks:
+  blood-pressure-tracker-network:
+    driver: bridge
