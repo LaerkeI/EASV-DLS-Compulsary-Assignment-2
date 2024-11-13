@@ -26,16 +26,16 @@ jobs:
         dotnet-version: '7.0' 
 
     - name: Restore dependencies for Patient Service
-      run: dotnet restore Patient Service/Patient Service.csproj
+      run: dotnet restore "Patient Service/Patient Service.csproj"
 
     - name: Restore dependencies for Measurement Service
-      run: dotnet restore Measurement Service/Measurement Service.csproj
+      run: dotnet restore "Measurement Service/Measurement Service.csproj"
 
     - name: Build Patient Service
-      run: dotnet build Patient Service/Patient Service.csproj --no-restore
+      run: dotnet build "Patient Service/Patient Service.csproj" --no-restore
 
     - name: Build Measurement Service
-      run: dotnet build Measurement Service/Measurement Service.csproj --no-restore
+      run: dotnet build "Measurement Service/Measurement Service.csproj" --no-restore
 
 # No tests
 
@@ -56,11 +56,11 @@ jobs:
 
     # Build Docker image for Patient Service
     - name: Build Docker image for Patient Service
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/patient-service:latest -f Patient Service/Dockerfile .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/patient-service:latest -f "Patient Service/Dockerfile" .
 
     # Build Docker image for Measurement Service
     - name: Build Docker image for Measurement Service
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/measurement-service:latest -f Measurement Service/Dockerfile .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/measurement-service:latest -f "Measurement Service/Dockerfile" .
 
     # Push Patient Service Docker image
     - name: Push Docker image for Patient Service
@@ -70,4 +70,4 @@ jobs:
     - name: Push Docker image for Measurement Service
       run: docker push ${{ secrets.DOCKER_USERNAME }}/measurement-service:latest
 
-#´No deploy server
+# No deploy server
