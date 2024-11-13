@@ -6,23 +6,48 @@ services:
       - "8080:8080"
     volumes:
       - ./docs:/usr/local/structurizr
+    networks:
+      - blood-pressure-tracker-network
 
-  mssql-server:
-    #The name of the db is "BloodPressureTrackerDB"
-    container_name: "mssql-server"
-    image: mcr.microsoft.com/mssql/server:latest
-    environment:
-      SA_PASSWORD: "YourStrong!Passw0rd"
-      ACCEPT_EULA: "Y"
+  patient-service:
+    container_name: "patient-service"
+    build: 
+      context: .
+      dockerfile: Patient Service/Dockerfile
     ports:
-      - "1433:1433"
+      - "5001:80"
+    depends_on:
+      - mysql-server
+    networks:
+      - blood-pressure-tracker-network
+
+  measurement-service:
+    container_name: "measurement-service"
+    build: 
+      context: .
+      dockerfile: Measurement Service/Dockerfile
+    ports:
+      - "5002:80"
+    depends_on:
+      - mysql-server
+    networks:
+      - blood-pressure-tracker-network
+
+  mysql-server:
+    container_name: "mysql-server"
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: MyStrong!Passw0rd
+      MYSQL_DATABASE: BloodPressureTrackerDb
+    ports:
+      - "3306:3306"
     volumes:
-      - mssqlserver-data:/var/opt/mssql
+      - mysql-data:/var/lib/mysql
     networks:
       - blood-pressure-tracker-network
 
 volumes:
-  mssqlserver-data:
+  mysql-data:
 
 networks:
   blood-pressure-tracker-network:
