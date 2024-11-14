@@ -15,7 +15,12 @@ namespace Measurement_Service.Repository
 
         public async Task<IEnumerable<Measurement>> GetMeasurementsByPatientSSNAsync(string ssn)
         {
-            var query = "SELECT * FROM Measurements WHERE patientSSN = @SSN";
+            var query = @"
+                SELECT systolic, diastolic, date
+                FROM Measurements
+                WHERE patientSSN = @SSN
+                ORDER BY date DESC
+                LIMIT 42"; //A patient with hypertension measures his blood pressure x3 in the morning and x3 in the afternoon for 1 week, and a doctor analyses the results. 
             var result = await _connection.QueryAsync<Measurement>(query, new { SSN = ssn });
             return result;
         }
