@@ -91,11 +91,11 @@ jobs:
 
     - name: Deploy Patient Service to Kubernetes
       run: |
-        kubectl apply -f patient-service.k8s.yml
+        kubectl apply -f "Patient Service/patient-service.k8s.yml"
 
     - name: Deploy Measurement Service to Kubernetes
       run: |
-        kubectl apply -f measurement-service.k8s.yml
+        kubectl apply -f "Measurement Service/measurement-service.k8s.yml"
 
     - name: Verify Deployment Status
       run: |
