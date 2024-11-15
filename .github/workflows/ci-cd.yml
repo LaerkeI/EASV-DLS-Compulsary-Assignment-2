@@ -86,6 +86,7 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       run: |
+        mkdir -p $HOME/.kube  # Create the .kube directory
         echo "$KUBE_CONFIG_DATA" | base64 --decode > $HOME/.kube/config
 
     - name: Deploy Patient Service to Kubernetes
