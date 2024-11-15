@@ -1,0 +1,58 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: measurement-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: measurement-service
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: measurement-service
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: measurement-service
+  template:
+    metadata:
+      labels:
+        app: measurement-service
+    spec:
+      containers:
+        - name: measurement-service
+          image: laerkeimeland/measurement-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: DATABASE_URL
+              value: "Server=mysql-server,3306;Database=BloodPressureTrackerDb;Uid=root;Pwd=MyStrong!Passw0rd;"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: measurement-service-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: measurement-service
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
