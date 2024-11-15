@@ -70,34 +70,34 @@ jobs:
     - name: Push Docker image for Measurement Service
       run: docker push ${{ secrets.DOCKER_USERNAME }}/measurement-service:latest
 
-  deploy:
-    needs: dockerize
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+  # deploy:
+  #   needs: dockerize
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
 
-    - name: Set up Kubernetes
-      uses: azure/setup-kubectl@v3
-      with:
-        version: v1.30.2 # This should be version of Kubernetes running on the cluster (Server Version)
+  #   - name: Set up Kubernetes
+  #     uses: azure/setup-kubectl@v3
+  #     with:
+  #       version: v1.30.2 # This should be version of Kubernetes running on the cluster (Server Version)
 
-    - name: Authenticate with Kubernetes cluster
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      run: |
-        mkdir -p $HOME/.kube  # Create the .kube directory
-        echo "$KUBE_CONFIG_DATA" | base64 --decode > $HOME/.kube/config
+  #   - name: Authenticate with Kubernetes cluster
+  #     env:
+  #       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+  #     run: |
+  #       mkdir -p $HOME/.kube  # Create the .kube directory
+  #       echo "$KUBE_CONFIG_DATA" | base64 --decode > $HOME/.kube/config
 
-    - name: Deploy Patient Service to Kubernetes
-      run: |
-        kubectl apply -f "Patient Service/patient-service.k8s.yml" --validate=false
+  #   - name: Deploy Patient Service to Kubernetes
+  #     run: |
+  #       kubectl apply -f "Patient Service/patient-service.k8s.yml" --validate=false
 
-    - name: Deploy Measurement Service to Kubernetes
-      run: |
-        kubectl apply -f "Measurement Service/measurement-service.k8s.yml" --validate=false
+  #   - name: Deploy Measurement Service to Kubernetes
+  #     run: |
+  #       kubectl apply -f "Measurement Service/measurement-service.k8s.yml" --validate=false
 
-    - name: Verify Deployment Status
-      run: |
-        kubectl rollout status deployment/patient-service # the name of the Kubernetes deployment resource, not the YAML file
-        kubectl rollout status deployment/measurement-service #  the name of the Kubernetes deployment resource, not the YAML file
+  #   - name: Verify Deployment Status
+  #     run: |
+  #       kubectl rollout status deployment/patient-service # the name of the Kubernetes deployment resource, not the YAML file
+  #       kubectl rollout status deployment/measurement-service #  the name of the Kubernetes deployment resource, not the YAML file
