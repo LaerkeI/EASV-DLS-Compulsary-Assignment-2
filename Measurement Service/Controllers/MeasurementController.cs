@@ -26,6 +26,25 @@ namespace Measurement_Service.Controllers
             return Ok(measurements);
         }
 
+        [HttpGet("weekly-average")]
+        public async Task<IActionResult> GetWeeklyAverage([FromQuery] string patientSSN)
+        {
+            try
+            {
+                var result = await _repository.GetWeeklyAverageAsync(patientSSN);
+                if (result == null)
+                {
+                    return NotFound("No measurements found for the given patient.");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateMeasurement([FromBody] Measurement measurement)
         {

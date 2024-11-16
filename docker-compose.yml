@@ -9,6 +9,16 @@ services:
     networks:
       - blood-pressure-tracker-network
 
+  featurehub:
+    image: featurehub/party-server:latest
+    restart: always
+    volumes:
+      - featurehub-h2-data:/db
+    ports:
+      - "8085:8085"
+    networks:
+      - blood-pressure-tracker-network
+
   patient-service:
     container_name: "patient-service"
     build: 
@@ -17,6 +27,7 @@ services:
     ports:
       - "5001:80"
     depends_on:
+      - featurehub
       - mysql-server
     networks:
       - blood-pressure-tracker-network
@@ -29,6 +40,7 @@ services:
     ports:
       - "5002:80"
     depends_on:
+      - featurehub
       - mysql-server
     networks:
       - blood-pressure-tracker-network
@@ -41,6 +53,8 @@ services:
       MYSQL_DATABASE: BloodPressureTrackerDb
     ports:
       - "3306:3306"
+    depends_on:
+      - featurehub
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -48,6 +62,7 @@ services:
 
 volumes:
   mysql-data:
+  featurehub-h2-data:
 
 networks:
   blood-pressure-tracker-network:
