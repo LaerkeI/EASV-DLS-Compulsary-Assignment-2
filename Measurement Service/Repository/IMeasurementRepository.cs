@@ -7,5 +7,7 @@ namespace Measurement_Service.Repository
         Task<IEnumerable<Measurement>> GetMeasurementsByPatientSSNAsync(string ssn);
         Task<Measurement> GetWeeklyAverageAsync(string patientSSN);
         Task CreateMeasurementAsync(Measurement measurement);
+        Task UpdateMeasurementAsync(int id, Measurement updatedMeasurement);
+        Task DeleteMeasurementAsync(int id);
     }
 }

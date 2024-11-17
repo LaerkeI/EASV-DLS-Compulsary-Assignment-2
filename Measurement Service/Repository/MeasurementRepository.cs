@@ -19,12 +19,18 @@ namespace Measurement_Service.Repository
         public async Task<IEnumerable<Measurement>> GetMeasurementsByPatientSSNAsync(string ssn)
         {
             var query = @"
-                SELECT systolic, diastolic, date
+                SELECT id, date, systolic, diastolic, seen, patientSSN
                 FROM Measurements
                 WHERE patientSSN = @SSN
                 ORDER BY date DESC
                 LIMIT 42"; //A patient with hypertension measures his blood pressure x3 in the morning and x3 in the afternoon for 1 week, and a doctor analyses the results. 
             var result = await _connection.QueryAsync<Measurement>(query, new { SSN = ssn });
+
+            if (!result.Any())
+            {
+                throw new Exception("No measurements for that patientSSN.");
+            }
+
             return result;
         }
 
@@ -67,6 +73,41 @@ namespace Measurement_Service.Repository
             var query = "INSERT INTO Measurements (date, systolic, diastolic, patientSSN, seen) " +
                         "VALUES (@Date, @Systolic, @Diastolic, @PatientSSN, @Seen)";
             await _connection.ExecuteAsync(query, measurement);
+        }
+
+        public async Task UpdateMeasurementAsync(int id, Measurement updatedMeasurement)
+        {
+            var query = @"
+            UPDATE Measurements
+            SET systolic = @Systolic, diastolic = @Diastolic, date = @Date, patientSSN = @PatientSSN, seen = @Seen
+            WHERE id = @Id";
+
+            var rowsAffected = await _connection.ExecuteAsync(query, new
+            {
+                Id = id,
+                updatedMeasurement.Systolic,
+                updatedMeasurement.Diastolic,
+                Date = DateTime.UtcNow,
+                updatedMeasurement.PatientSSN,
+                updatedMeasurement.Seen
+            });
+
+            if (rowsAffected == 0)
+            {
+                throw new Exception("Measurement not found or no changes made.");
+            }
+        }
+
+        public async Task DeleteMeasurementAsync(int id)
+        {
+            var query = "DELETE FROM Measurements WHERE id = @Id";
+
+            var rowsAffected = await _connection.ExecuteAsync(query, new { Id = id });
+
+            if (rowsAffected == 0)
+            {
+                throw new Exception("Measurement not found.");
+            }
         }
     }
 }
